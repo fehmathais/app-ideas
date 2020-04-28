@@ -3,19 +3,29 @@ import styles from'./index.module.scss';
 
 interface IState {
 	binary: string,
-	decimal: number
+	decimal: number,
+	error: boolean
 }
 
 export default class Home extends Component<any, IState> {
 	state: IState = {
 		binary: '',
-		decimal: 0
+		decimal: 0,
+		error: false
+	}
+
+	isValidDigit = (value: string) => {
+		return (value.match(/[2-9]/) === null);
 	}
 
 	handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		if (this.state.binary.length <= 7) {
-			this.setState({binary: event.target.value});
+		this.setState({error: false});
+
+		if (this.isValidDigit(event.target.value)) {
+			return this.setState({binary: event.target.value});
 		}
+
+		return this.setState({error: true});
 	}
 
 	handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -50,6 +60,13 @@ export default class Home extends Component<any, IState> {
 						   value={this.state.binary}
 						   onChange={this.handleChange}
 						   onKeyPress={this.handleKeyPress}/>
+
+					{
+						this.state.error
+							? <span>Error: invalid binary</span>
+							: ''
+					}
+
 					<button onClick={this.generateDecimal}>Convert</button>
 
 					<p>Converted: {this.state.decimal}</p>
